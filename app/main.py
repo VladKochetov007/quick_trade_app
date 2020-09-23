@@ -65,6 +65,23 @@ class App(object):
         path = self.get_theme_img()
         self.button_theme.configure(image=open_img(path))
 
+    def back(self, screen='self.build_loading_root'):
+        """
+
+        :type screen: any
+        """
+        if isinstance(screen, str):
+            screen = eval(screen)
+        button2 = Button(self.root,
+                         text='b a c k' if self.lang == 'en' else 'н а з а д',
+                         bd=0,
+                         bg=self.anti_back,
+                         fg=self.theme,
+                         width=self.screen_width,
+                         height=30,
+                         command=screen)
+        button2.place(x=0, y=0)
+
     def get_theme_img(self):
         if self.theme == self.backgrounds['light']:
             path = 'quick_trade_app/sun.PNG'
@@ -74,10 +91,24 @@ class App(object):
 
     def main_screen(self):
         clear(self.root)
+        self.back()
         self.root.title('trading selector')
         self.root['bg'] = self.theme
 
+        button_code = Button(self.root,
+                             bg=self.theme,
+                             fg=self.anti_back,
+                             text='manually code',
+                             command=self.manually_code)
+        button_code.place(x=100, y=100)
         self.root.mainloop()
+
+    def manually_code(self):
+        clear(self.root)
+        self.back(screen=self.main_screen)
+        text = tk.Text(self.root, height=100, width=129)
+        text.place(x=100, y=110)
+        self.root.title('manually code')
 
     def build_loading_root(self):
         clear(self.root)
@@ -85,20 +116,29 @@ class App(object):
         self._language = 'Language:' if self.lang == 'en' else 'Язык:'
         self.root.configure(background=self.theme)
         # logo
-        img = open_img('quick_trade_app/qutr.PNG', size=(self.screen_width // 3,
-                                            round(self.screen_height // 3 / 1.5)))
+        img = open_img('quick_trade_app/qutr.PNG',
+                       size=(self.screen_width // 3,
+                             round(self.screen_height // 3 / 1.5)))
         label = tk.Label(self.root, image=img,
                          bd=0, bg=self.theme)
         label.pack()
 
         # continue
-        img_lang_continue = open_img('quick_trade_app/rus_continue.PNG' if self.lang == 'ru' else 'quick_trade_app/eng_continue.PNG', (200, 50))
+        if self.lang == 'ru':
+            img_path = 'quick_trade_app/rus_continue.PNG'
+        else:
+            img_path = 'quick_trade_app/eng_continue.PNG'
+        img_lang_continue = open_img(img_path, (200, 50))
         label2 = Button(self.root, image=img_lang_continue, bd=0, command=self.main_screen,
                         bg=self.theme)
         label2.pack(side='bottom', expand=self.screen_height // 10)
 
         # settings
-        im3 = open_img('quick_trade_app/settings_icon.PNG' if self.theme == self.backgrounds['light'] else 'quick_trade_app/setting_white.PNG',
+        if self.theme == self.backgrounds['light']:
+            img_path = 'quick_trade_app/settings_icon.PNG'
+        else:
+            img_path = 'quick_trade_app/setting_white.PNG'
+        im3 = open_img(img_path,
                        (40, 40))
         label3 = Button(self.root, image=im3, bd=0, command=self.build_settings, bg=self.theme)
         label3.place(x=self.screen_width - 70, y=0)
@@ -124,15 +164,7 @@ class App(object):
         self.listbox.current()
         labelx.place(x=30, y=60)
 
-        button2 = Button(self.root,
-                         text='b a c k' if self.lang == 'en' else 'н а з а д',
-                         bd=0,
-                         bg=self.anti_back,
-                         fg=self.theme,
-                         width=self.screen_width,
-                         height=30,
-                         command=self.build_loading_root)
-        button2.place(x=0, y=0)
+        self.back()
 
         label_theme = tk.Label(self.root, text='Theme:' if self.lang == 'en' else 'Тема:', bg=self.theme,
                                fg=self.anti_back)
