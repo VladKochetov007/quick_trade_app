@@ -94,21 +94,32 @@ class App(object):
         self.back()
         self.root.title('trading selector')
         self.root['bg'] = self.theme
-
-        button_code = Button(self.root,
-                             bg=self.theme,
-                             fg=self.anti_back,
-                             text='manually code',
-                             command=self.manually_code)
-        button_code.place(x=100, y=100)
+        width = self.screen_width//2
+        button_realtime = Button(self.root,
+                                 bg=self.theme,
+                                 fg=self.anti_back,
+                                 text='realtime trading' if self.lang == 'en' else 'трейдинг в реальном времени',
+                                 command=self.realtime_trade,
+                                 image=open_img('quick_trade_app/realtime.PNG', (width,
+                                                                                 round(width/1.465813674530188))),
+                                 bd=0)
+        button_realtime.place(x=width//2, y=50)
+        text_realtime = Button(self.root,
+                               bg=self.theme,
+                               fg=self.anti_back,
+                               text='realtime trading' if self.lang == 'en' else 'трейдинг в реальном времени',
+                               command=self.realtime_trade,
+                               width=width+33,
+                               bd=0)
+        text_realtime.place(x=width//2, y=round(width/1.465813674530188)+45)
         self.root.mainloop()
 
-    def manually_code(self):
+    def realtime_trade(self):
         clear(self.root)
         self.back(screen=self.main_screen)
         text = tk.Text(self.root, height=100, width=129)
         text.place(x=100, y=110)
-        self.root.title('manually code')
+        self.root.title('realtime trading')
 
     def build_loading_root(self):
         clear(self.root)
