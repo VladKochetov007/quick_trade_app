@@ -1,14 +1,16 @@
-# usr
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+import platform
 import tkinter as tk
 from tkinter import ttk
 
 from PIL import Image, ImageTk
 
-system = 'macos'  # other
-if system == 'macos':
-    from tkmacosx import Button
+plt = platform.system()
+if plt == 'Darwin':
+    from tkmacosx import Button, SFrame
 else:
-    from tkinter import Button
+    from tkinter import Button, SFrame
 
 
 def clear(root):
@@ -84,34 +86,37 @@ class App(object):
 
     def get_theme_img(self):
         if self.theme == self.backgrounds['light']:
-            path = 'quick_trade_app/sun.PNG'
+            path = '../sun.PNG'
         else:
-            path = 'quick_trade_app/moon.PNG'
+            path = '../moon.PNG'
         return path
 
     def main_screen(self):
         clear(self.root)
+
+        self.frame = SFrame(self.root, bg=self.theme)
+        self.frame.pack(expand=1, fill='both')
+
         self.back()
         self.root.title('trading selector')
         self.root['bg'] = self.theme
-        width = self.screen_width//2
+        width = self.screen_width // 2
         button_realtime = Button(self.root,
                                  bg=self.theme,
                                  fg=self.anti_back,
-                                 text='realtime trading' if self.lang == 'en' else 'трейдинг в реальном времени',
                                  command=self.realtime_trade,
-                                 image=open_img('quick_trade_app/realtime.PNG', (width,
-                                                                                 round(width/1.465813674530188))),
+                                 image=open_img('../realtime.PNG', (width,
+                                                                    round(width / 1.465813674530188))),
                                  bd=0)
-        button_realtime.place(x=width//2, y=50)
+        button_realtime.place(x=width // 2, y=50)
         text_realtime = Button(self.root,
                                bg=self.theme,
                                fg=self.anti_back,
                                text='realtime trading' if self.lang == 'en' else 'трейдинг в реальном времени',
                                command=self.realtime_trade,
-                               width=width+33,
+                               width=width + 33,
                                bd=0)
-        text_realtime.place(x=width//2, y=round(width/1.465813674530188)+45)
+        text_realtime.place(x=width // 2, y=round(width / 1.465813674530188) + 400)
         self.root.mainloop()
 
     def realtime_trade(self):
@@ -127,7 +132,7 @@ class App(object):
         self._language = 'Language:' if self.lang == 'en' else 'Язык:'
         self.root.configure(background=self.theme)
         # logo
-        img = open_img('quick_trade_app/qutr.PNG',
+        img = open_img('../qutr.PNG',
                        size=(self.screen_width // 3,
                              round(self.screen_height // 3 / 1.5)))
         label = tk.Label(self.root, image=img,
@@ -136,9 +141,9 @@ class App(object):
 
         # continue
         if self.lang == 'ru':
-            img_path = 'quick_trade_app/rus_continue.PNG'
+            img_path = '../rus_continue.PNG'
         else:
-            img_path = 'quick_trade_app/eng_continue.PNG'
+            img_path = '../eng_continue.PNG'
         img_lang_continue = open_img(img_path, (200, 50))
         label2 = Button(self.root, image=img_lang_continue, bd=0, command=self.main_screen,
                         bg=self.theme)
@@ -146,9 +151,9 @@ class App(object):
 
         # settings
         if self.theme == self.backgrounds['light']:
-            img_path = 'quick_trade_app/settings_icon.PNG'
+            img_path = '../settings_icon.PNG'
         else:
-            img_path = 'quick_trade_app/setting_white.PNG'
+            img_path = '../setting_white.PNG'
         im3 = open_img(img_path,
                        (40, 40))
         label3 = Button(self.root, image=im3, bd=0, command=self.build_settings, bg=self.theme)
