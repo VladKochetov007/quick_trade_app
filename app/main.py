@@ -10,7 +10,9 @@ plt = platform.system()
 if plt == 'Darwin':
     from tkmacosx import Button, SFrame
 else:
-    from tkinter import Button, SFrame
+    from tkinter import Button, Frame
+
+    SFrame = Frame
 
 
 def clear(root):
@@ -67,22 +69,26 @@ class App(object):
         path = self.get_theme_img()
         self.button_theme.configure(image=open_img(path))
 
-    def back(self, screen='self.build_loading_root'):
+    def back(self, screen='self.build_loading_root', self_fr='self.root'):
         """
 
+        :param self_fr: current frame or root
+        :type self_fr: any
         :type screen: any
         """
         if isinstance(screen, str):
             screen = eval(screen)
-        button2 = Button(self.root,
-                         text='b a c k' if self.lang == 'en' else 'н а з а д',
-                         bd=0,
-                         bg=self.anti_back,
-                         fg=self.theme,
-                         width=self.screen_width,
-                         height=30,
-                         command=screen)
-        button2.place(x=0, y=0)
+        if isinstance(self_fr, str):
+            self_fr = eval(self_fr)
+        self.button_back = Button(self_fr,
+                                  text='b a c k' if self.lang == 'en' else 'н а з а д',
+                                  bd=0,
+                                  bg=self.anti_back,
+                                  fg=self.theme,
+                                  width=self.screen_width,
+                                  height=30,
+                                  command=screen)
+        self.button_back.place(x=0, y=0)
 
     def get_theme_img(self):
         if self.theme == self.backgrounds['light']:
@@ -94,14 +100,13 @@ class App(object):
     def main_screen(self):
         clear(self.root)
 
-        self.frame = SFrame(self.root, bg=self.theme)
-        self.frame.pack(expand=1, fill='both')
+        frame = SFrame(self.root, bg=self.theme)
 
-        self.back()
+        self.back(self_fr=frame)
         self.root.title('trading selector')
         self.root['bg'] = self.theme
         width = self.screen_width // 2
-        button_realtime = Button(self.root,
+        button_realtime = Button(frame,
                                  bg=self.theme,
                                  fg=self.anti_back,
                                  command=self.realtime_trade,
@@ -109,14 +114,21 @@ class App(object):
                                                                     round(width / 1.465813674530188))),
                                  bd=0)
         button_realtime.place(x=width // 2, y=50)
-        text_realtime = Button(self.root,
+        text_realtime = Button(frame,
                                bg=self.theme,
                                fg=self.anti_back,
                                text='realtime trading' if self.lang == 'en' else 'трейдинг в реальном времени',
                                command=self.realtime_trade,
                                width=width + 33,
                                bd=0)
-        text_realtime.place(x=width // 2, y=round(width / 1.465813674530188) + 400)
+
+        text_realtime.place(x=width // 2,
+                            y=round(width / 1.465813674530188) + 400)
+
+        frame.config(avoidmousewheel=(button_realtime,
+                                      text_realtime,
+                                      self.button_back))
+        frame.pack(expand=1, fill='both')
         self.root.mainloop()
 
     def realtime_trade(self):
