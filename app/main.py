@@ -6,11 +6,9 @@ import platform
 
 plt = platform.system()
 if plt == 'Darwin':
-    from tkmacosx import Button, SFrame
+    from tkmacosx import Button
 else:
-    from tkinter import Button, Frame
-
-    SFrame = Frame
+    from tkinter import Button
 
 
 def clear(root):
@@ -121,10 +119,42 @@ class App(object):
 
     def realtime_trade(self):
         clear(self.root)
-        self.back(screen=self.main_screen)
-        text = tk.Text(self.root, height=100, width=129)
-        text.place(x=100, y=110)
         self.root.title('realtime trading')
+        self.back(screen=self.main_screen)
+        top = tk.Toplevel(self.root)
+        top.title('binance keys')
+        top.geometry('725x160')
+        top['bg'] = self.theme
+        def a():
+            print(self.message.get(),
+                  self.message2.get())
+
+        self.message = tk.StringVar()
+        entry = tk.Entry(top, textvariable=self.message, width=55, bg=self.theme, fg=self.anti_back, bd=0) # public
+        label1 = tk.Label(top,
+                          text='public key' if self.lang == 'en' else 'Публичный ключ',
+                          fg=self.anti_back,
+                          bg=self.theme,
+                          bd=0)
+        label1.place(y=10, x=10)
+        entry.place(x=160, y=10)
+        self.message2 = tk.StringVar()
+        entry = tk.Entry(top, textvariable=self.message2, width=55, bg=self.theme, fg=self.anti_back, bd=0) # secret
+        label2 = tk.Label(top,
+                          text='Secret key' if self.lang == 'en' else 'Секретный ключ',
+                          fg=self.anti_back,
+                          bg=self.theme,
+                          bd=0)
+        label2.place(y=60, x=10)
+        entry.place(x=160, y=60)
+        submit_button = Button(top,
+                               text='Submit' if self.lang == 'en' else 'Подтвердить',
+                               width=100,
+                               command=a,
+                               bg=self.theme,
+                               fg=self.anti_back)
+        submit_button.place(x=362-50, y=110)
+        top.mainloop()
 
     def build_loading_root(self):
         clear(self.root)
