@@ -1,10 +1,8 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-import platform
 import tkinter as tk
 from tkinter import ttk
 
 from PIL import Image, ImageTk
+import platform
 
 plt = platform.system()
 if plt == 'Darwin':
@@ -28,6 +26,10 @@ def open_img(path, size=(30, 30)):
 
 
 class App(object):
+    def build_canvas(self):
+        self.canvas = tk.Canvas(self.root)
+        self.canvas.place(relx=0, rely=0, relheight=1, relwidth=1)
+
     def __init__(self):
         self.root = tk.Tk()
         self.root.geometry('700x500')
@@ -69,26 +71,21 @@ class App(object):
         path = self.get_theme_img()
         self.button_theme.configure(image=open_img(path))
 
-    def back(self, screen='self.build_loading_root', self_fr='self.root'):
+    def back(self, screen='self.build_loading_root'):
         """
-
-        :param self_fr: current frame or root
-        :type self_fr: any
         :type screen: any
         """
         if isinstance(screen, str):
             screen = eval(screen)
-        if isinstance(self_fr, str):
-            self_fr = eval(self_fr)
-        self.button_back = Button(self_fr,
-                                  text='b a c k' if self.lang == 'en' else 'н а з а д',
-                                  bd=0,
-                                  bg=self.anti_back,
-                                  fg=self.theme,
-                                  width=self.screen_width,
-                                  height=30,
-                                  command=screen)
-        self.button_back.place(x=0, y=0)
+        button2 = Button(self.root,
+                         text='b a c k' if self.lang == 'en' else 'н а з а д',
+                         bd=0,
+                         bg=self.anti_back,
+                         fg=self.theme,
+                         width=self.screen_width,
+                         height=30,
+                         command=screen)
+        button2.place(x=0, y=0)
 
     def get_theme_img(self):
         if self.theme == self.backgrounds['light']:
@@ -99,36 +96,27 @@ class App(object):
 
     def main_screen(self):
         clear(self.root)
-
-        frame = SFrame(self.root, bg=self.theme)
-
-        self.back(self_fr=frame)
+        self.back()
         self.root.title('trading selector')
         self.root['bg'] = self.theme
         width = self.screen_width // 2
-        button_realtime = Button(frame,
+        button_realtime = Button(self.root,
                                  bg=self.theme,
                                  fg=self.anti_back,
+                                 text='realtime trading' if self.lang == 'en' else 'трейдинг в реальном времени',
                                  command=self.realtime_trade,
                                  image=open_img('../realtime.PNG', (width,
                                                                     round(width / 1.465813674530188))),
                                  bd=0)
         button_realtime.place(x=width // 2, y=50)
-        text_realtime = Button(frame,
+        text_realtime = Button(self.root,
                                bg=self.theme,
                                fg=self.anti_back,
                                text='realtime trading' if self.lang == 'en' else 'трейдинг в реальном времени',
                                command=self.realtime_trade,
                                width=width + 33,
                                bd=0)
-
-        text_realtime.place(x=width // 2,
-                            y=round(width / 1.465813674530188) + 400)
-
-        frame.config(avoidmousewheel=(button_realtime,
-                                      text_realtime,
-                                      self.button_back))
-        frame.pack(expand=1, fill='both')
+        text_realtime.place(x=width // 2, y=round(width / 1.465813674530188) + 45)
         self.root.mainloop()
 
     def realtime_trade(self):
