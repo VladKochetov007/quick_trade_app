@@ -29,6 +29,8 @@ class App(object):
         self.canvas.place(relx=0, rely=0, relheight=1, relwidth=1)
 
     def __init__(self):
+        self.trading_dats = {'secret-api': 'non set',
+                             'public-api': 'non set'}
         self.root = tk.Tk()
         self.root.geometry('700x500')
         self.listbox = 'listbox'
@@ -125,12 +127,15 @@ class App(object):
         top.title('binance keys')
         top.geometry('725x160')
         top['bg'] = self.theme
-        def a():
-            print(self.message.get(),
-                  self.message2.get())
+
+        def keys_api_set():
+            self.trading_dats['public-api'] = self.message.get()
+            self.trading_dats['secret-api'] = self.message2.get()
+            print(self.trading_dats)
+            top.destroy()
 
         self.message = tk.StringVar()
-        entry = tk.Entry(top, textvariable=self.message, width=55, bg=self.theme, fg=self.anti_back, bd=0) # public
+        entry = tk.Entry(top, textvariable=self.message, width=55, bg=self.theme, fg=self.anti_back, bd=0)  # public
         label1 = tk.Label(top,
                           text='public key' if self.lang == 'en' else 'Публичный ключ',
                           fg=self.anti_back,
@@ -139,7 +144,7 @@ class App(object):
         label1.place(y=10, x=10)
         entry.place(x=160, y=10)
         self.message2 = tk.StringVar()
-        entry = tk.Entry(top, textvariable=self.message2, width=55, bg=self.theme, fg=self.anti_back, bd=0) # secret
+        entry = tk.Entry(top, textvariable=self.message2, width=55, bg=self.theme, fg=self.anti_back, bd=0)  # secret
         label2 = tk.Label(top,
                           text='Secret key' if self.lang == 'en' else 'Секретный ключ',
                           fg=self.anti_back,
@@ -150,7 +155,7 @@ class App(object):
         submit_button = Button(top,
                                text='Submit' if self.lang == 'en' else 'Подтвердить',
                                width=100,
-                               command=a,
+                               command=keys_api_set,
                                bg=self.theme,
                                fg=self.anti_back)
         submit_button.place(x=362-50, y=110)
