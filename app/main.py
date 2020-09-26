@@ -3,6 +3,7 @@ from tkinter import ttk
 
 from PIL import Image, ImageTk
 import platform
+import threading
 
 plt = platform.system()
 if plt == 'Darwin':
@@ -28,7 +29,22 @@ class App(object):
         self.canvas = tk.Canvas(self.root)
         self.canvas.place(relx=0, rely=0, relheight=1, relwidth=1)
 
+    def _init_(self):
+        print('srt')
+        import quick_trade.trading_sys
+        import quick_trade.utils
+
+        df = quick_trade.utils.get_binance_data()
+        self.trader = quick_trade.trading_sys.PatternFinder(df=df)
+        print('load')
+        self.loading = False
+        self.looped = True
+        self.pre_main()
+        self.root.update()
+
     def __init__(self):
+        self.loading = True
+        self.looped = False
         self.trading_dats = {'secret-api': 'non set',
                              'public-api': 'non set'}
         self.root = tk.Tk()
@@ -42,9 +58,12 @@ class App(object):
         self.lang = 'en'
         self.screen_width = self.root.winfo_screenwidth()
         self.screen_height = self.root.winfo_screenwidth()
-        self.build_loading_root()
         self.button_theme = Button()
         self._language = 'lang'
+
+        thread = threading.Thread(target=self._init_)
+        thread.start()
+        self.pre_main()
 
     @property
     def theme(self):
@@ -71,7 +90,7 @@ class App(object):
         path = self.get_theme_img()
         self.button_theme.configure(image=open_img(path))
 
-    def back(self, screen='self.build_loading_root'):
+    def back(self, screen='self.pre_main'):
         """
         :type screen: any
         """
@@ -135,7 +154,7 @@ class App(object):
             top.destroy()
 
         self.message = tk.StringVar()
-        entry = tk.Entry(top, textvariable=self.message, width=55, bg=self.theme, fg=self.anti_back, bd=0)  # public
+        entry = tk.Entry(top, textvariable=self.message, width=55, bg=self.theme, fg=self.anti_back, bd=3)  # public
         label1 = tk.Label(top,
                           text='public key' if self.lang == 'en' else 'Публичный ключ',
                           fg=self.anti_back,
@@ -144,7 +163,7 @@ class App(object):
         label1.place(y=10, x=10)
         entry.place(x=160, y=10)
         self.message2 = tk.StringVar()
-        entry = tk.Entry(top, textvariable=self.message2, width=55, bg=self.theme, fg=self.anti_back, bd=0)  # secret
+        entry = tk.Entry(top, textvariable=self.message2, width=55, bg=self.theme, fg=self.anti_back, bd=3)  # secret
         label2 = tk.Label(top,
                           text='Secret key' if self.lang == 'en' else 'Секретный ключ',
                           fg=self.anti_back,
@@ -161,27 +180,33 @@ class App(object):
         submit_button.place(x=362-50, y=110)
         top.mainloop()
 
-    def build_loading_root(self):
+    def pre_main(self):
         clear(self.root)
         self.root.title("quick_trade")
         self._language = 'Language:' if self.lang == 'en' else 'Язык:'
         self.root.configure(background=self.theme)
         # logo
-        img = open_img('../qutr.PNG',
-                       size=(self.screen_width // 3,
-                             round(self.screen_height // 3 / 1.5)))
-        label = tk.Label(self.root, image=img,
-                         bd=0, bg=self.theme)
-        label.pack()
+        self.__img_ = open_img('../qutr.PNG',
+                               size=(self.screen_width // 3,
+                                     round(self.screen_height // 3 / 1.5)))
+        label_ = tk.Label(self.root, image=self.__img_,
+                          bd=0, bg=self.theme)
+        label_.pack()
 
         # continue
-        if self.lang == 'ru':
-            img_path = '../rus_continue.PNG'
+        if not self.loading:
+            if self.lang == 'ru':
+                img_path = '../rus_continue.PNG'
+            else:
+                img_path = '../eng_continue.PNG'
+            img_lang_continue = open_img(img_path, (200, 50))
+            label2 = Button(self.root, image=img_lang_continue, bd=0, command=self.main_screen,
+                            bg=self.theme)
         else:
-            img_path = '../eng_continue.PNG'
-        img_lang_continue = open_img(img_path, (200, 50))
-        label2 = Button(self.root, image=img_lang_continue, bd=0, command=self.main_screen,
-                        bg=self.theme)
+            label_text = 'loading...' if self.lang == 'en' else 'Загрузка...'
+            label2 = tk.Label(fg=self.anti_back,
+                              text=label_text,
+                              bg=self.theme)
         label2.pack(side='bottom', expand=self.screen_height // 10)
 
         # settings
@@ -191,10 +216,11 @@ class App(object):
             img_path = '../setting_white.PNG'
         im3 = open_img(img_path,
                        (40, 40))
-        label3 = Button(self.root, image=im3, bd=0, command=self.build_settings, bg=self.theme)
+        label3 = Button(self.root, image=im3, bd=5, command=self.build_settings, bg=self.theme)
         label3.place(x=self.screen_width - 70, y=0)
-
-        self.root.mainloop()
+        if not self.looped:
+            self.root.mainloop()
+            self.looped = True
 
     def build_settings(self):
         clear(self.root)
