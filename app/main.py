@@ -39,11 +39,13 @@ class App(object):
         print('load')
         self.loading = False
         self.looped = True
-        self.pre_main()
+        if not self.__settings:
+            self.pre_main()
         self.root.update()
 
     def __init__(self):
         self.loading = True
+        self.__settings = False
         self.looped = False
         self.trading_dats = {'secret-api': 'non set',
                              'public-api': 'non set'}
@@ -181,6 +183,7 @@ class App(object):
         top.mainloop()
 
     def pre_main(self):
+        self.__settings = False
         clear(self.root)
         self.root.title("quick_trade")
         self._language = 'Language:' if self.lang == 'en' else 'Язык:'
@@ -224,6 +227,7 @@ class App(object):
 
     def build_settings(self):
         clear(self.root)
+        self.__settings = True
         self.root.title('settings')
         self.root['bg'] = self.theme
         labelx = tk.Label(self.root,
