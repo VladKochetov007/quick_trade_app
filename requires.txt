@@ -1,1 +1,1 @@
-tkmacosx==0.1.6
+tkmacosx==1.0.0
